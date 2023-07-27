@@ -307,20 +307,30 @@ export class CDPElementHandle<
     await this.#page.mouse.click(x, y, options);
   }
 
-  /**
-   * This method creates and captures a dragevent from the element.
-   */
+  #isDragging = false;
+
   override async drag(
     this: CDPElementHandle<Element>,
-    target: Point
-  ): Promise<Protocol.Input.DragData> {
-    assert(
-      this.#page.isDragInterceptionEnabled(),
-      'Drag Interception is not enabled!'
-    );
+    target: Point | ElementHandle<Node>
+  ): Promise<Protocol.Input.DragData | void> {
     await this.scrollIntoViewIfNeeded();
-    const start = await this.clickablePoint();
-    return await this.#page.mouse.drag(start, target);
+    const source = await this.clickablePoint();
+    if (target instanceof ElementHandle) {
+      target = await target.clickablePoint();
+    }
+    if (this.#page.isDragInterceptionEnabled()) {
+      return await this.#page.mouse.drag(source, target);
+    }
+    if (this.#isDragging) {
+      await this.#page.mouse.move(target.x, target.y);
+    } else {
+      this.#isDragging = true;
+      await Promise.all([
+        this.#page.mouse.move(source.x, source.y),
+        this.#page.mouse.down(),
+        this.#page.mouse.move(target.x, target.y),
+      ]);
+    }
   }
 
   override async dragEnter(
@@ -343,11 +353,19 @@ export class CDPElementHandle<
 
   override async drop(
     this: CDPElementHandle<Element>,
-    data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
+    dataOrTarget: Protocol.Input.DragData | Point | ElementHandle<Node> = {
+      items: [],
+      dragOperationsMask: 1,
+    }
   ): Promise<void> {
-    await this.scrollIntoViewIfNeeded();
-    const destination = await this.clickablePoint();
-    await this.#page.mouse.drop(destination, data);
+    if ('items' in dataOrTarget) {
+      await this.scrollIntoViewIfNeeded();
+      const destination = await this.clickablePoint();
+      await this.#page.mouse.drop(destination, dataOrTarget);
+    } else {
+      await this.drag(dataOrTarget);
+      await this.#page.mouse.up();
+    }
   }
 
   override async dragAndDrop(

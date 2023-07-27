@@ -659,18 +659,22 @@ export class ElementHandle<
   }
 
   /**
-   * This method creates and captures a dragevent from the element.
+   * Drags an element to the given element or point.
+   *
+   * @returns DragData is drag interception is enabled. This use case is deprecated;
    */
   async drag(
     this: ElementHandle<Element>,
-    target: Point
-  ): Promise<Protocol.Input.DragData>;
-  async drag(this: ElementHandle<Element>): Promise<Protocol.Input.DragData> {
+    target: Point | ElementHandle<Element>
+  ): Promise<Protocol.Input.DragData | void>;
+  async drag(
+    this: ElementHandle<Element>
+  ): Promise<Protocol.Input.DragData | void> {
     throw new Error('Not implemented');
   }
 
   /**
-   * This method creates a `dragenter` event on the element.
+   * @deprecated Do not use. `dragenter` will automatically be performed during dragging.
    */
   async dragEnter(
     this: ElementHandle<Element>,
@@ -681,7 +685,7 @@ export class ElementHandle<
   }
 
   /**
-   * This method creates a `dragover` event on the element.
+   * @deprecated Do not use. `dragover` will automatically be performed during dragging.
    */
   async dragOver(
     this: ElementHandle<Element>,
@@ -692,7 +696,14 @@ export class ElementHandle<
   }
 
   /**
-   * This method triggers a drop on the element.
+   * Drops an element at the given element or point.
+   */
+  async drop(
+    this: ElementHandle<Element>,
+    target: ElementHandle<Node> | Point
+  ): Promise<void>;
+  /**
+   * @deprecated No longer supported.
    */
   async drop(
     this: ElementHandle<Element>,
@@ -703,7 +714,7 @@ export class ElementHandle<
   }
 
   /**
-   * This method triggers a dragenter, dragover, and drop on the element.
+   * @deprecated Use {@link ElementHandle.prototype.drop}.
    */
   async dragAndDrop(
     this: ElementHandle<Element>,

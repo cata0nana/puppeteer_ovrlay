@@ -484,6 +484,10 @@ export class Page extends EventEmitter {
 
   /**
    * `true` if drag events are being intercepted, `false` otherwise.
+   *
+   * @deprecated We no longer support intercepting drag payloads. Use the new
+   * drag APIs found on {@link ElementHandle} to drag (or just use the
+   * {@link Page.mouse}).
    */
   isDragInterceptionEnabled(): boolean {
     throw new Error('Not implemented');
@@ -744,10 +748,9 @@ export class Page extends EventEmitter {
   /**
    * @param enabled - Whether to enable drag interception.
    *
-   * @remarks
-   * Activating drag interception enables the `Input.drag`,
-   * methods This provides the capability to capture drag events emitted
-   * on the page, which can then be used to simulate drag-and-drop.
+   * @deprecated We no longer support intercepting drag payloads. Use the new
+   * drag APIs found on {@link ElementHandle} to drag (or just use the
+   * {@link Page.mouse}).
    */
   async setDragInterception(enabled: boolean): Promise<void>;
   async setDragInterception(): Promise<void> {
