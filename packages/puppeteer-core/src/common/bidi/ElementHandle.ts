@@ -29,6 +29,7 @@ import {KeyInput} from '../USKeyboardLayout.js';
 import {Frame} from './Frame.js';
 import {JSHandle} from './JSHandle.js';
 import {Realm} from './Realm.js';
+import {debugError} from './utils.js';
 
 /**
  * @internal
@@ -198,5 +199,28 @@ export class ElementHandle<
   ): Promise<void> {
     await this.focus();
     await this.#frame.page().keyboard.press(key, options);
+  }
+
+  override async contentFrame(): Promise<Frame | null> {
+    const remoteValue = this.remoteValue();
+    if (
+      remoteValue.type === 'node' &&
+      remoteValue.value?.localName === 'iframe'
+    ) {
+      const iframeWindow = await (
+        this as unknown as ElementHandle<HTMLIFrameElement>
+      ).evaluateHandle((iframe: HTMLIFrameElement) => {
+        return iframe.contentWindow;
+      });
+
+      const remoteValue = (iframeWindow as JSHandle).remoteValue();
+      if (remoteValue.type === 'window' && remoteValue.value.context) {
+        const contextId = remoteValue.value.context;
+        void iframeWindow.dispose().catch(debugError);
+        return this.frame.page().frame(contextId);
+      }
+    }
+
+    return null;
   }
 }

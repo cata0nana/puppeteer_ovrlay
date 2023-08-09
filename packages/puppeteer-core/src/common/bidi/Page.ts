@@ -709,6 +709,53 @@ export class Page extends PageBase {
     );
   }
 
+  override async waitForFrame(
+    urlOrPredicate: string | ((frame: Frame) => boolean | Promise<boolean>),
+    options: {timeout?: number} = {}
+  ): Promise<Frame> {
+    const {timeout = this.#timeoutSettings.timeout()} = options;
+
+    let predicate: (frame: Frame) => Promise<boolean>;
+    if (isString(urlOrPredicate)) {
+      predicate = (frame: Frame) => {
+        return Promise.resolve(urlOrPredicate === frame.url());
+      };
+    } else {
+      predicate = (frame: Frame) => {
+        const value = urlOrPredicate(frame);
+        if (typeof value === 'boolean') {
+          return Promise.resolve(value);
+        }
+        return value;
+      };
+    }
+
+    const eventRace: Promise<Frame> = Deferred.race([
+      waitForEvent(
+        this,
+        PageEmittedEvents.FrameAttached,
+        predicate,
+        timeout,
+        this.#closedDeferred.valueOrThrow()
+      ),
+      waitForEvent(
+        this,
+        PageEmittedEvents.FrameNavigated,
+        predicate,
+        timeout,
+        this.#closedDeferred.valueOrThrow()
+      ),
+      ...this.frames().map(async frame => {
+        if (await predicate(frame)) {
+          return frame;
+        }
+        return await eventRace;
+      }),
+    ]);
+
+    return eventRace;
+  }
+
   override title(): Promise<string> {
     return this.mainFrame().title();
   }

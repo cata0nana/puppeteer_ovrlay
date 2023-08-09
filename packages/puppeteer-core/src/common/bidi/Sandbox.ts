@@ -273,4 +273,10 @@ export class Sandbox implements RealmBase {
     await handle.type(text, options);
     await handle.dispose();
   }
+
+  dispose(): void {
+    this.#taskManager.terminateAll(
+      new Error('waitForFunction failed: frame got detached.')
+    );
+  }
 }

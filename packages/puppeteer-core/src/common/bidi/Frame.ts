@@ -273,5 +273,11 @@ export class Frame extends BaseFrame {
   dispose(): void {
     this.#abortDeferred.reject(new Error('Frame detached'));
     this.#context.dispose();
+    this.sandboxes[MAIN_SANDBOX].dispose();
+    this.sandboxes[PUPPETEER_SANDBOX].dispose();
+  }
+
+  override isDetached(): boolean {
+    return this.#abortDeferred.finished();
   }
 }
