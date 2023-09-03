@@ -20,6 +20,21 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.2.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.1.1...puppeteer-core-v21.2.0) (2023-09-03)
+
+
+### Features
+
+* expose DevTools as a target ([#10812](https://github.com/puppeteer/puppeteer/issues/10812)) ([a540085](https://github.com/puppeteer/puppeteer/commit/a540085176d92bd160a12ebc54606dbacd064979))
+
+
+### Bug Fixes
+
+* apply viewport emulation to prerender targets ([#10804](https://github.com/puppeteer/puppeteer/issues/10804)) ([14f0ab7](https://github.com/puppeteer/puppeteer/commit/14f0ab7397053db5591823c716e142c684f25b44))
+* implement `throwIfDetached` ([#10826](https://github.com/puppeteer/puppeteer/issues/10826)) ([538bb73](https://github.com/puppeteer/puppeteer/commit/538bb73ea7e280cacf15fc1d2100251d8e17f906))
+* make network manager multi session ([#10793](https://github.com/puppeteer/puppeteer/issues/10793)) ([085936b](https://github.com/puppeteer/puppeteer/commit/085936bd7e17ed5a8085311f5b212c7b9ca96a0d))
+* make page.goBack work with bfcache in tab mode ([#10818](https://github.com/puppeteer/puppeteer/issues/10818)) ([22daf18](https://github.com/puppeteer/puppeteer/commit/22daf1861fc358acf4d84c360049736c22249f92))
+
 ## [21.1.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.1.0...puppeteer-core-v21.1.1) (2023-08-28)
 
 
